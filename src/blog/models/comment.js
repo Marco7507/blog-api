@@ -14,12 +14,11 @@ const commentSchema = new mongoose.Schema({
         type: String,
         default: uuidv4,
     },
-    // TODO
-    id_post: {
+    postId: {
         type: String,
         ref: "Post",
     },
-    owner: {
+    ownerId: {
         type: String,
         ref: "Profile",
     },

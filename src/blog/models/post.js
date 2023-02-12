@@ -17,8 +17,7 @@ const postSchema = new mongoose.Schema({
         type: String,
         default: uuidv4,
     },
-    // TODO
-    owner: {
+    ownerId: {
         type: String,
         ref : "Profile",
     },

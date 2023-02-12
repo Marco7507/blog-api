@@ -6,10 +6,10 @@ const { getUrl } = require("../../../utils/getter");
 const { removeFields } = require("../../../utils/remover");
 
 const createPost = async (req, res) => {
-    //TODO
     const post = new Post({
         title: req.body.title,
         content: req.body.content,
+        ownerId: req.account.id,
     });
 
     try {
@@ -23,8 +23,12 @@ const createPost = async (req, res) => {
 };
 
 const deletePost = async (req, res) => {
+    if (req.account.id !== req.post.ownerId) {
+        return res.status(403).json({ msg: RESPONSE_MESSAGES.YOU_ARE_NOT_OWNER });
+    }
+
     try {
-        await Promise.all([Post.deleteOne({ id: req.post.id }), Comment.deleteMany({ post: req.params.id })]);
+        await Promise.all([Post.deleteOne({ id: req.post.id }), Comment.deleteMany({ postId: req.params.id })]);
 
         res.status(204).end();
     } catch (err) {
@@ -34,6 +38,8 @@ const deletePost = async (req, res) => {
 
 const getAll = async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
+
+    if (page < 1 || limit < 1) return res.status(400).json({ msg: RESPONSE_MESSAGES.INVALID_PAGE_OR_LIMIT });
 
     try {
         const posts = await Post.find()
@@ -72,7 +78,10 @@ const getById = async (req, res) => {
 const updatePost = async (req, res) => {
     const { id } = req.params;
 
-    //TODO
+    if (req.account.id !== req.post.ownerId) {
+        return res.status(403).json({ msg: RESPONSE_MESSAGES.YOU_ARE_NOT_OWNER });
+    }
+
     const update = {
         title: req.body.title,
         content: req.body.content,
