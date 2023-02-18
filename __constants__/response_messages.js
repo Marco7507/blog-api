@@ -5,4 +5,6 @@ module.exports = ResponseMessages = {
     POST_UPDATED: "Post updated",
     INVALID_PAGE_OR_LIMIT: "Page and limit must be greater than 0",
     YOU_ARE_NOT_OWNER: "You are not owner of this post",
+    INVALID_KIND: "Invalid kind",
+    PROFILE_NOT_FOUND: "Profile not found",
 };

@@ -5,9 +5,11 @@ const baseSchema = new mongoose.Schema(
     {
         avatar: {
             type: String,
+            default: "",
         },
         bio: {
             type: String,
+            default: "",
         },
         createdAt: {
             type: Date,
@@ -20,7 +22,7 @@ const baseSchema = new mongoose.Schema(
             type: String,
             default: uuidv4,
         },
-        owner: {
+        ownerId: {
             type: String,
             ref: "Account",
         },
@@ -29,6 +31,7 @@ const baseSchema = new mongoose.Schema(
         },
         username: {
             type: String,
+            required: true,
         },
     },
     {

@@ -10,17 +10,19 @@ const {
 	getProfileById
 } = require("./controllers/profile_controller");
 
+// TODO faire des middlewares de content
+
 // @route   GET /
-router.get("/", getProfiles);
+router.get("", getProfiles);
 
 // @route   POST /
-router.post("/", createProfile);
+router.post("", createProfile);
 
 // @route   PATCH /
-router.patch("/", updateProfile);
+router.patch("/:id", updateProfile);
 
 // @route   DELETE /
-router.delete("/", deleteProfile);
+router.delete("/:id", deleteProfile);
 
 // @route   GET /:id
 router.get("/:id", getProfileById);

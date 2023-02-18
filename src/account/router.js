@@ -7,8 +7,9 @@ const { deleteAccount, login, register } = require("./controllers/account_contro
 router.post("/login", login);
 
 router.post("/register", register);
+// TODO mettre les fonctions des routes dans le controller
 router.get("/verify", authenticate, (req, res) => {
-    res.status(200).json({ id: req.account, email: req.email });
+    res.status(200).json({ id: req.account.id, email: req.account.email });
 });
 router.post("/forgot-password", (req, res) => {
     const { email, password } = req.body;
