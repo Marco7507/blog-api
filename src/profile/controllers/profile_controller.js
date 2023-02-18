@@ -12,6 +12,12 @@ const createProfile = async (req, res) => {
     const { kind, ...body } = req.body;
 
     try {
+        const profilesCount = await Profile.find({ ownerId: req.account.id }).count();
+
+        if (profilesCount >= 5) {
+            return res.status(400).json({ error: RESPONSE_MESSAGES.MAX_PROFILES_REACHED });
+        }
+
         let Model;
 
         switch (kind) {
@@ -67,7 +73,7 @@ const getProfiles = async (req, res) => {
 const updateProfile = async (req, res) => {
     delete req.body.ownerId, req.body.email, req.body.id, req.body.kind;
 
-    console.log("req.body", req.body)
+    console.log("req.body", req.body);
 
     try {
         const { id } = req.params;
@@ -97,7 +103,9 @@ const updateProfile = async (req, res) => {
         profile = await Model.findOneAndUpdate({ id }, req.body, {
             new: true,
             runValidators: true,
-        }).lean().exec()
+        })
+            .lean()
+            .exec();
 
         res.status(200).json(profile);
     } catch (error) {
@@ -117,33 +125,70 @@ const deleteProfile = async (req, res) => {
             return res.status(403).json({ error: RESPONSE_MESSAGES.YOU_ARE_NOT_OWNER });
         }
 
-        const deleteResponse = await Profile.deleteOne({ id: req.params.id }).lean().exec();
+        await Promise.all([
+            Post.deleteMany({ ownerId: req.params.id }).lean().exec(),
+            Comment.deleteMany({ ownerId: req.params.id }).lean().exec(),
+            Profile.deleteOne({ id: req.params.id }).lean().exec()
+        ]);
 
-        res.status(200).json(deleteResponse);
+        res.status(200).json(RESPONSE_MESSAGES.PROFILE_DELETED);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
 const getProfilesPosts = async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
+
+    if (page < 1 || limit < 1) {
+        return res.status(400).json({ msg: RESPONSE_MESSAGES.INVALID_PAGE_OR_LIMIT });
+    }
+
     try {
         const id = req.params.id;
 
-        const posts = await Post.find({ ownerId: id }).lean.exec();
+        const posts = await Post.find({ ownerId: id })
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .lean()
+            .exec();
 
-        res.status(200).json(posts);
+        const count = await Post.find({ ownerId: id }).count();
+
+        res.status(200).json({
+            posts,
+            currentPage: page,
+            totalPages: Math.ceil(count / limit),
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
 const getProfilesComments = async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
+
+    if (page < 1 || limit < 1) {
+        return res.status(400).json({ msg: RESPONSE_MESSAGES.INVALID_PAGE_OR_LIMIT });
+    }
+
     try {
         const id = req.params.id;
 
-        const comments = Comment.find({ ownerId: id });
+        const comments = await Comment.find({ ownerId: id })
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .lean()
+            .exec();
 
-        res.status(200).json(comments);
+
+        const count = await Comment.find({ ownerId: id }).count();
+
+        res.status(200).json({
+            comments,
+            currentPage: page,
+            totalPages: Math.ceil(count / limit),
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

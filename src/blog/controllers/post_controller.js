@@ -1,4 +1,5 @@
 const Post = require("../models/post");
+const Profile = require("../../profile/models/profile");
 
 const RESPONSE_MESSAGES = require("../../../__constants__/response_messages");
 
@@ -6,13 +7,22 @@ const { getUrl } = require("../../../utils/getter");
 const { removeFields } = require("../../../utils/remover");
 
 const createPost = async (req, res) => {
-    const post = new Post({
-        title: req.body.title,
-        content: req.body.content,
-        ownerId: req.account.id,
-    });
-
     try {
+        const profile = await Profile.findOne({
+            id: req.params.profileId,
+            ownerId: req.account.id,
+        }).exec();
+
+        if (!profile) {
+            return res.status(404).json({ msg: RESPONSE_MESSAGES.PROFILE_NOT_FOUND });
+        }
+
+        const post = new Post({
+            title: req.body.title,
+            content: req.body.content,
+            ownerId: profile.id,
+        });
+
         await post.save();
 
         res.header("Location", getUrl(req, post.id));
@@ -28,7 +38,10 @@ const deletePost = async (req, res) => {
     }
 
     try {
-        await Promise.all([Post.deleteOne({ id: req.post.id }), Comment.deleteMany({ postId: req.params.id })]);
+        await Promise.all([
+            Post.deleteOne({ id: req.post.id }),
+            Comment.deleteMany({ postId: req.params.id }),
+        ]);
 
         res.status(204).end();
     } catch (err) {
@@ -39,7 +52,9 @@ const deletePost = async (req, res) => {
 const getAll = async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
 
-    if (page < 1 || limit < 1) return res.status(400).json({ msg: RESPONSE_MESSAGES.INVALID_PAGE_OR_LIMIT });
+    if (page < 1 || limit < 1) {
+        return res.status(400).json({ msg: RESPONSE_MESSAGES.INVALID_PAGE_OR_LIMIT });
+    }
 
     try {
         const posts = await Post.find()

@@ -1,6 +1,9 @@
 const Account = require("../models/account");
 const { emailValidator, passwordValidator } = require("../validators");
 const { getUrl } = require("../../../utils/getter");
+const { Profile } = require("../../profile/models/profile");
+const { Post } = require("../../blog/models/post");
+const { Comment } = require("../../blog/models/comment");
 
 const deleteAccount = async (req, res) => {
     const { email } = req.body;
@@ -10,6 +13,15 @@ const deleteAccount = async (req, res) => {
         if (!account) {
             res.status(404).json({ error: "Account not found" });
         }
+
+        const profiles = await Profile.find({ ownerId: account.id });
+        profiles.forEach(async (profile) => {
+            await Promise.all([
+                Post.deleteMany({ ownerId: profile.id }).lean().exec(),
+                Comment.deleteMany({ ownerId: profile.id }).lean().exec(),
+                Profile.deleteOne({ id: profile.id }).lean().exec()
+            ])
+        });
 
         res.status(204).end();
     } catch (err) {

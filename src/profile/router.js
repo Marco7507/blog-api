@@ -1,16 +1,14 @@
 const router = require("express").Router();
 
 const {
-	createProfile,
-	getProfiles,
-	deleteProfile,
-	getProfilesPosts,
-	getProfilesComments,
-	updateProfile,
-	getProfileById
+    createProfile,
+    getProfiles,
+    deleteProfile,
+    getProfilesPosts,
+    getProfilesComments,
+    updateProfile,
+    getProfileById,
 } = require("./controllers/profile_controller");
-
-// TODO faire des middlewares de content
 
 // @route   GET /
 router.get("", getProfiles);
@@ -28,9 +26,9 @@ router.delete("/:id", deleteProfile);
 router.get("/:id", getProfileById);
 
 // @route   GET /:id/posts
-router.get("/:id/posts", getProfilesPosts);
+router.get("/:id/posts/", getProfilesPosts);
 
 // @route   GET /:id/comments
-router.get("/:id/comments", getProfilesComments);
+router.get("/:id/comments/", getProfilesComments);
 
 module.exports = router;

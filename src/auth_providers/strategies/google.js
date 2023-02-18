@@ -32,7 +32,9 @@ router.get("/callback/success", async (req, res) => {
             status = 201;
         }
 
-        return res.status(status).json({ account: removeFields(account.toObject()), token: account.generateJwt() });
+        return res
+            .status(status)
+            .json({ account: removeFields(account.toObject()), token: account.generateJwt() });
     } catch (err) {
         res.status(500).json({ msg: err });
     }

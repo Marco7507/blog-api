@@ -1,17 +1,27 @@
 const Comment = require("../models/comment");
 const Post = require("../models/post");
+const Profile = require("../../profile/models/profile");
 
 const { getUrl } = require("../../../utils/getter");
 const { removeFields } = require("../../../utils/remover");
 
 const createComment = async (req, res) => {
-    const { id } = req.params;
+    const { id, profileId } = req.params;
 
     try {
+        const profile = await Profile.findOne({
+            id: profileId,
+            ownerId: req.account.id,
+        }).exec();
+
+        if (!profile) {
+            return res.status(404).json({ msg: RESPONSE_MESSAGES.PROFILE_NOT_FOUND });
+        }
+
         const comment = new Comment({
             ...req.body,
             postId: id,
-            ownerId: req.account.id,
+            ownerId: profile.id,
         });
 
         req.post.commentsCount++;
@@ -49,13 +59,13 @@ const getAllComments = async (req, res) => {
     const { id } = req.params;
     const { page = 1, limit = 10 } = req.query;
 
-    const comments = await Comment.find({ id_post: id })
+    const comments = await Comment.find({ postId: id })
         .limit(limit)
         .skip((page - 1) * limit)
         .lean()
         .exec();
 
-    const count = await Comment.find({ id_post: id }).count();
+    const count = await Comment.find({ postId: id }).count();
 
     res.status(200).json({
         comments: removeFields(comments),

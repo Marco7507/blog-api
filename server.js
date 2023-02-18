@@ -7,7 +7,10 @@ require("./db").connect();
 require("./src/auth_providers/passport");
 
 const app = express();
-const port = process.env.PORT || 3000;
+let port = process.env.PORT || 3000;
+if(process.env.NODE_ENV === "test") {
+    port = 3001;
+}
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -40,3 +43,5 @@ routes.forEach((route) => {
 app.listen(port, () => {
     console.log(`Server is listening on port http://localhost:${port}`);
 });
+
+module.exports = app;

@@ -14,7 +14,7 @@ const authenticate = (req, res, next) => {
         req.account = {
             id: decode.id,
             email: decode.email,
-        }
+        };
 
         next();
     } catch (err) {

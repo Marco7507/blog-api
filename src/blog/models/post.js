@@ -19,7 +19,7 @@ const postSchema = new mongoose.Schema({
     },
     ownerId: {
         type: String,
-        ref : "Profile",
+        ref: "Profile",
     },
     title: {
         type: String,

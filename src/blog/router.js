@@ -1,9 +1,19 @@
 const express = require("express");
 const router = express.Router();
 
-const { createPost, deletePost, getAll, getById, updatePost } = require("./controllers/post_controller");
+const {
+    createPost,
+    deletePost,
+    getAll,
+    getById,
+    updatePost,
+} = require("./controllers/post_controller");
 
-const { createComment, deleteComment, getAllComments } = require("./controllers/comment_controller");
+const {
+    createComment,
+    deleteComment,
+    getAllComments,
+} = require("./controllers/comment_controller");
 
 const { postExistsMiddleware, contentBodyMiddleware } = require("./middlewares");
 
@@ -21,7 +31,7 @@ router.get("/posts", getAll);
 router.get("/posts/:id", postExistsMiddleware, getById);
 
 // @route   POST /blog/posts
-router.post("/posts", contentBodyMiddleware, createPost);
+router.post("/posts/:profileId", contentBodyMiddleware, createPost);
 
 // @route   PUT /blog/posts/:id
 router.patch("/posts/:id", postExistsMiddleware, contentBodyMiddleware, updatePost);
@@ -33,7 +43,7 @@ router.delete("/posts/:id", postExistsMiddleware, deletePost);
 router.get("/posts/:id/comments", postExistsMiddleware, getAllComments);
 
 // @route   POST /blog/posts/:id/comments
-router.post("/posts/:id/comments", postExistsMiddleware, createComment);
+router.post("/posts/:id/comments/:profileId", postExistsMiddleware, createComment);
 
 // @route   DELETE /blog/comments/:commentId
 router.delete("/comments/:id", deleteComment);

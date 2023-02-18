@@ -27,7 +27,7 @@ const baseSchema = new mongoose.Schema(
             ref: "Account",
         },
         updatedAt: {
-          type: Date,
+            type: Date,
         },
         username: {
             type: String,
