@@ -19,8 +19,8 @@ const deleteAccount = async (req, res) => {
             await Promise.all([
                 Post.deleteMany({ ownerId: profile.id }).lean().exec(),
                 Comment.deleteMany({ ownerId: profile.id }).lean().exec(),
-                Profile.deleteOne({ id: profile.id }).lean().exec()
-            ])
+                Profile.deleteOne({ id: profile.id }).lean().exec(),
+            ]);
         });
 
         res.status(204).end();
@@ -92,4 +92,8 @@ const register = async (req, res) => {
     }
 };
 
-module.exports = { deleteAccount, login, register };
+const verify = async (req, res) => {
+    res.status(200).json({ id: req.account.id, email: req.account.email });
+};
+
+module.exports = { deleteAccount, login, register, verify };

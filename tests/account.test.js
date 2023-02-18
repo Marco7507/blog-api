@@ -3,9 +3,8 @@ const router = require("../server.js");
 const Account = require("../src/account/models/account.js");
 
 describe("Account", () => {
-
     beforeAll(async () => {
-        await Account.deleteMany({email : "john.doe@test.com"});
+        await Account.deleteMany({ email: "john.doe@test.com" });
     });
 
     describe("POST /account/register", () => {
@@ -55,7 +54,7 @@ describe("Account", () => {
         });
 
         afterAll((done) => {
-            Account.deleteMany({email : "john.doe@test.com"});
+            Account.deleteMany({ email: "john.doe@test.com" });
             done();
             return;
         });

@@ -128,7 +128,7 @@ const deleteProfile = async (req, res) => {
         await Promise.all([
             Post.deleteMany({ ownerId: req.params.id }).lean().exec(),
             Comment.deleteMany({ ownerId: req.params.id }).lean().exec(),
-            Profile.deleteOne({ id: req.params.id }).lean().exec()
+            Profile.deleteOne({ id: req.params.id }).lean().exec(),
         ]);
 
         res.status(200).json(RESPONSE_MESSAGES.PROFILE_DELETED);
@@ -180,7 +180,6 @@ const getProfilesComments = async (req, res) => {
             .limit(limit)
             .lean()
             .exec();
-
 
         const count = await Comment.find({ ownerId: id }).count();
 
